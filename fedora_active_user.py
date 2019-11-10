@@ -22,7 +22,6 @@ project.
 """
 
 import datetime
-import fedora_cert
 import getpass
 import json
 import logging
@@ -295,6 +294,7 @@ def _get_last_website_login(username):
 
     log.debug('Querying FAS for user: {0}'.format(username))
     try:
+        import fedora_cert
         fasusername = fedora_cert.read_user_cert()
     except Exception:
         log.debug('Could not read Fedora cert, using login name')
