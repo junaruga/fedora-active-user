@@ -52,20 +52,6 @@ _table_keys = {
 }
 
 
-_mailing_lists = [
-    'devel@lists.fedoraproject.org',
-    'users@lists.fedoraproject.org',
-    'freeipa-users@lists.fedorahosted.org',
-    'infrastructure@lists.fedoraproject.org',
-    'test@lists.fedoraproject.org',
-    'magazine@lists.fedoraproject.org',
-    'trans@lists.fedoraproject.org',
-    'kde@lists.fedoraproject.org',
-    'epel-devel@lists.fedoraproject.org',
-    'sssd-users@lists.fedorahosted.org'
-]
-
-
 def _get_bodhi_history(username):
     """ Print the last action performed on bodhi by the given FAS user.
 
@@ -215,31 +201,26 @@ def _get_last_email_list(username):
 
     :arg username, the username to search on the mailing lists.
     """
-    log.debug('Searching mailing lists for username {0}'.format(username))
-    print('Last email on archived mailing list:')
-    for mailinglist in _mailing_lists:
-        log.debug('Searching list {0}'.format(mailinglist))
-        if sys.version_info[0] >= 3:
-            import urllib.parse
-            import urllib.request
-            url = 'https://lists.fedoraproject.org/archives/search?mlist=%s&q=%s' \
-                % (urllib.parse.quote(mailinglist), urllib.parse.quote(username))
-            stream = urllib.request.urlopen(url)
-        else:
-            url = 'https://lists.fedoraproject.org/archives/search?mlist=%s&q=%s' \
-                % (urllib.quote(mailinglist), urllib.quote(username))
-            stream = urllib.urlopen(url)
-        html = stream.read()
-        stream.close()
-        
-        soup = BeautifulSoup(html, "lxml")
-        try:
-            date = soup.find("div",attrs={"class":u"thread-date"}).text
-            msg = date.strip()
-        except Exception as err:
-            msg = "No activity found"
-        
-        print("  - %s: %s" % (mailinglist, msg))
+    log.debug('Searching activity for {0} on the Fedora lists'.format(email))
+    print('Last email on mailing list:')
+    url  = "https://lists.fedoraproject.org/archives/api/sender/{0}/emails/".format(email)
+    log.debug('Querying {0}'.format(url))
+    stream = urllib.urlopen(url)
+    data = json.loads(stream.read())
+    stream.close()
+    if not data["count"]:
+        print("   No activity found on %s" % mailinglist)
+    else:
+        for entry in data["results"]:
+            print(
+                "  On {0} {1} emailed as {2} on {3}".format(
+                    entry["date"],
+                    email,
+                    entry["sender_name"],
+                    entry["mailinglist"],
+                )
+            )
+        next_url = data["next"]
 
 
 def _get_fedmsg_history(username):
