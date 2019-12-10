@@ -217,6 +217,8 @@ def _get_koji_history(username, all_actions=False):
         for entry in new_timeline[-1:]:
             _print_histline(entry)
 
+    print()
+
 
 def _get_last_email_list(username):
     """ Using lists.fedoraproject.org, let's find the last email sent by this username.
@@ -246,6 +248,7 @@ def _get_last_email_list(username):
                 )
             )
         next_url = data["next"]
+    print()
 
 
 def _get_fedmsg_history(username):
@@ -261,11 +264,7 @@ def _get_fedmsg_history(username):
         '?user=%s&order=desc&delta=31104000&meta=subtitle&'\
         'rows_per_page=10' % (username)
     log.debug(url)
-<<<<<<< HEAD
-    if sys.version_info[0] >= 3:
-=======
     if PY3:
->>>>>>> 9f98117... Add python3 support for querying remote URL or getting the user's input
         stream = urllib.request.urlopen(url)
     else:
         stream = urllib.urlopen(url)
@@ -284,13 +283,9 @@ def _get_fedmsg_history(username):
                 # datagrepper returned this message for our user, but the user
                 # doesn't appear in the message.  How?
                 raise ValueError("This shouldn't happen.")
-        print('  - %s on %s %s' % (
-            entry['meta']['subtitle'],
-            datetime.datetime.fromtimestamp(
-                int(entry['timestamp'])
-            ).strftime('%Y-%m-%d %H:%M:%S'),
-            extra_str))
-
+        if not PY3:
+            print()
+    print()
 
 
 def _get_last_website_login(username):
@@ -308,11 +303,7 @@ def _get_last_website_login(username):
         fasusername = fedora_cert.read_user_cert()
     except Exception:
         log.debug('Could not read Fedora cert, using login name')
-<<<<<<< HEAD
-        if sys.version_info[0] >= 3:
-=======
         if PY3:
->>>>>>> 9f98117... Add python3 support for querying remote URL or getting the user's input
             fasusername = input('FAS username: ')
         else:
             fasusername = raw_input('FAS username: ')
@@ -322,6 +313,7 @@ def _get_last_website_login(username):
     person = fasclient.person_by_username(username)
     print('Last login in FAS:')
     print('   %s %s' % (username, person['last_seen'].split(' ')[0]))
+    print()
 
 
 def _print_histline(entry, **kwargs):
