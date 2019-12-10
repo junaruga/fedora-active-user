@@ -26,9 +26,16 @@ import getpass
 import json
 import logging
 import re
+import sys
 import time
-import urllib
-from bs4 import BeautifulSoup
+
+PY3 = sys.version_info[0] >= 3
+
+if PY3:
+    import urllib.parse
+    import urllib.request
+else:
+    import urllib
 
 
 # Initial simple logging stuff
@@ -220,7 +227,10 @@ def _get_last_email_list(username):
     print('Last email on mailing list:')
     url  = "https://lists.fedoraproject.org/archives/api/sender/{0}/emails/".format(email)
     log.debug('Querying {0}'.format(url))
-    stream = urllib.urlopen(url)
+    if PY3:
+        stream = urllib.request.urlopen(url)
+    else:
+        stream = urllib.urlopen(url)
     data = json.loads(stream.read())
     stream.close()
     if not data["count"]:
@@ -251,7 +261,11 @@ def _get_fedmsg_history(username):
         '?user=%s&order=desc&delta=31104000&meta=subtitle&'\
         'rows_per_page=10' % (username)
     log.debug(url)
+<<<<<<< HEAD
     if sys.version_info[0] >= 3:
+=======
+    if PY3:
+>>>>>>> 9f98117... Add python3 support for querying remote URL or getting the user's input
         stream = urllib.request.urlopen(url)
     else:
         stream = urllib.urlopen(url)
@@ -294,7 +308,11 @@ def _get_last_website_login(username):
         fasusername = fedora_cert.read_user_cert()
     except Exception:
         log.debug('Could not read Fedora cert, using login name')
+<<<<<<< HEAD
         if sys.version_info[0] >= 3:
+=======
+        if PY3:
+>>>>>>> 9f98117... Add python3 support for querying remote URL or getting the user's input
             fasusername = input('FAS username: ')
         else:
             fasusername = raw_input('FAS username: ')
