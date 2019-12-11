@@ -9,6 +9,11 @@ matrix:
     - name: fedora31
       env:
         - BASE_IMAGE=fedora:31
+    - name: python2
+      language: python
+      python: '2.7'
+      install:
+      script: python fedora_active_user.py --help
   allow_failures:
   fast_finish: true
 install:
