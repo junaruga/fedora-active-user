@@ -6,7 +6,6 @@ RUN dnf -y upgrade \
   --setopt=tsflags=nodocs \
   # Runtime dependency
   python3 \
-  python3-beautifulsoup4 \
   && dnf clean all
 
 WORKDIR /work
